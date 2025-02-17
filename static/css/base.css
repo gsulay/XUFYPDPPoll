@@ -44,10 +44,10 @@ body::before {
 }
 .logo{
     display: flex;
-    justify-content: center; /* Centers horizontally */
+    justify-content: right; /* Centers horizontally */
     align-items:center;
     /* overflow: hidden; */
-    height: 200px;
+    height: 100px;
 }
 .logo img{
     height: auto;
@@ -121,7 +121,7 @@ th {
     /* Ensure logo is properly scaled */
     .logo img {
         width: 50%; /* Increase size on mobile */
-        max-width: 250px;
+        max-width: 100px;
     }
 
     /* Make table responsive */
