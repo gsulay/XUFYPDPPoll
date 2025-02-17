@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FYPDP 2025 - Live Poll</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Luxurious+Roman&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body>
+    <!-- <img src="https://scontent.fcgy1-3.fna.fbcdn.net/v/t1.6435-9/104705617_123678559374528_4393443990604758410_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeGGXam4xrVD2soaXjYWlHgbfom_LeWwK9N-ib8t5bAr0y6E84lKeOy1QW6CkUsXo5ObaQ6mSbmaMncrYmwYyLOE&_nc_ohc=F2QaTMe_XCQQ7kNvgHrA9jx&_nc_oc=AdjNCcr1Vubb-5QMx_rBMrSb7EMOGNe0pLoAkS6Vga2JyFUzlrmPwhEKhoCfvsmEkVk&_nc_zt=23&_nc_ht=scontent.fcgy1-3.fna&_nc_gid=AQ0dFEb4-yczLEhqVQR2Crq&oh=00_AYDO-kP81lHxmzQ7CCta-7eES_SQBleLrkE-7zg5KnKjXw&oe=67D8A21A"> -->
+    <div class="header-container">
+        <div class="logo"><img src="{{ url_for('static', filename='logo.png') }}"></div>
+        <div class="form-header">
+            Final Year Project Display and Presentation 2025
+        </div>
+    </div>
+
+    <div class="body-container">
+        <div class="body-header">
+            Live Poll
+        </div>
+        <div class="body-text">
+            <br>
+            <hr>
+            {% for df in aggregated %}
+            <div class="table-title">
+                {{ df[0][0] }}
+            </div>
+            <table>
+                <tr>
+                    <th>Study</th>
+                    <th>Total Votes</th>
+                </tr>
+                {% for row in df %}
+                <tr>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                </tr>
+                {% endfor %}   
+            </table>
+            <hr>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

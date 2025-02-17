@@ -1,0 +1,137 @@
+
+body {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    color:white;
+}
+
+body::before {
+    content: "";
+    position: fixed; /* Ensures it covers the whole screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("../bg.png") no-repeat center center fixed;
+    background-size: cover;
+    filter: blur(8px); /* Adjust blur strength */
+    z-index: -1; /* Moves it behind the content */
+}
+
+.form-header {
+    font-size: 60px; /* Correct usage */
+    font-weight: bold; /* Optional: makes the text bold */
+    text-align: center; /* Optional: centers the text */
+    font-family: 'Luxorious Roman',serif;
+}
+
+.header-container, .body-container{
+    background-color: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top:5%;
+    margin-left: 15%;
+    margin-right:15%;
+}
+.header-container {
+    margin-top: 1%;
+}
+.body-text, .body-header{
+    font-size: 25px;
+    text-align:center;
+    
+}
+.logo{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items:center;
+    /* overflow: hidden; */
+    height: 200px;
+}
+.logo img{
+    height: auto;
+
+    padding-left: 4%;
+    width: 30%;
+    max-height: 200px;
+    max-width: max-content;
+    /* margin-bottom: 50px; */
+    /* object-fit: cover; */
+    /* object-position: top; */
+}
+
+hr{
+    color:rgb(209, 209, 209, 0.5);
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+/* Tables */
+
+.body-header{
+    font-weight: bold;
+    font-size: 50px;
+}
+
+table {
+    width: 50%;
+    border-collapse: collapse;
+    border-radius: 5px;
+    margin: 20px auto;
+}
+th, td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+}
+th {
+    background-color: rgb(209, 209, 209, 0.5);
+}
+
+.table-title{
+    font-size: 30px;
+}
+
+@media (max-width: 768px) {
+    /* Adjust text sizes for better readability */
+    .form-header {
+        font-size: 40px; /* Smaller font size for mobile */
+    }
+
+    .body-header {
+        font-size: 35px; /* Reduce header size */
+    }
+
+    .body-text, .body-header {
+        font-size: 20px;
+    }
+
+    .table-title {
+        font-size: 25px;
+    }
+
+    /* Adjust margins to use more screen space */
+    .header-container, .body-container {
+        margin-left: 5%;
+        margin-right: 5%;
+        padding: 15px;
+    }
+
+    /* Ensure logo is properly scaled */
+    .logo img {
+        width: 50%; /* Increase size on mobile */
+        max-width: 250px;
+    }
+
+    /* Make table responsive */
+    table {
+        width: 90%; /* Use most of the screen */
+        font-size: 14px; /* Reduce font size */
+        border-radius: 5px;
+    }
+
+    th, td {
+        padding: 5px;
+    }
+}
