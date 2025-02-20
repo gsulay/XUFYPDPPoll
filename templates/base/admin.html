@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FYPDP 2025 - Vote</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Luxurious+Roman&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+
+
+</head>
+<body>
+    <!-- <img src="https://scontent.fcgy1-3.fna.fbcdn.net/v/t1.6435-9/104705617_123678559374528_4393443990604758410_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeGGXam4xrVD2soaXjYWlHgbfom_LeWwK9N-ib8t5bAr0y6E84lKeOy1QW6CkUsXo5ObaQ6mSbmaMncrYmwYyLOE&_nc_ohc=F2QaTMe_XCQQ7kNvgHrA9jx&_nc_oc=AdjNCcr1Vubb-5QMx_rBMrSb7EMOGNe0pLoAkS6Vga2JyFUzlrmPwhEKhoCfvsmEkVk&_nc_zt=23&_nc_ht=scontent.fcgy1-3.fna&_nc_gid=AQ0dFEb4-yczLEhqVQR2Crq&oh=00_AYDO-kP81lHxmzQ7CCta-7eES_SQBleLrkE-7zg5KnKjXw&oe=67D8A21A"> -->
+    <div class="logo"><img src="{{ url_for('static', filename='logo.png') }}"></div>
+    <div class="header-container">
+        <div class="form-header">
+            Final Year Project Display and Presentation 2025
+        </div>
+    </div>
+
+    <div class="body-container">
+        <!-- Admin Panel -->
+            <div class="body-header">
+                Admin Panel
+            </div>
+            <div class="body-text">
+                <br>
+                <form method="POST" action="/admin" id="resetForm">
+                    <input type="hidden" name="confirm_reset" id="confirmResetInput" value="false">
+                    <button type="submit" name="reset_database" onclick="confirmReset(event);">Reset Database</button>
+                </form>
+            </div>
+    </div>
+    <script>
+        function confirmReset(event) {
+            event.preventDefault();  // Stop the form from submitting immediately
+            
+            var form = document.getElementById("resetForm");
+            var confirmInput = document.getElementById("confirmResetInput");
+            console.log("{{password}}")
+            var correctPIN = "{{ password }}"; // Change this to your actual PIN
+    
+            console.log("Confirm Reset Clicked");
+            console.log("Form Element:", form);
+    
+            if (!form) {
+                console.error("Error: Form not found! Check the ID in your HTML.");
+                return;
+            }
+    
+            // Ask for a PIN
+            var userPIN = prompt("Enter the admin PIN to reset the database:");
+    
+            if (userPIN === null) {
+                console.log("Reset canceled by user.");
+                return; // User pressed Cancel
+            }
+    
+            if (userPIN === correctPIN) {
+                confirmInput.value = "true"; 
+                console.log("Correct PIN entered. Resetting database...");
+                form.submit();  // Manually submit the form
+            } else {
+                alert("Incorrect PIN! Database reset denied.");
+                console.error("Incorrect PIN entered.");
+            }
+        }
+    </script>
+</body>
+</html>

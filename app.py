@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, make_response
+from flask import Flask, url_for, redirect, render_template, request, jsonify, make_response
 import sqlite3
 import datetime
 import pandas as pd
@@ -6,9 +6,23 @@ import os
 from module.logger import Logger
 
 app = Flask(__name__)
+logger = Logger(__name__)
 DEBUG = False
 
-def init_database():
+ADMIN_PASS = "FYPDP2025_admin135"
+
+def init_database() -> None:
+    """
+    Initializes the poll database by creating a table if it does not exist.
+
+    The table has the following columns:
+        id: The unique identifier for the poll entry.
+        criteria: The criteria for which the user voted.
+        study: The study for which the user voted.
+        ip_address: The IP address of the user.
+
+    Note that this function does not have any parameters or return values.
+    """
     conn = sqlite3.connect('poll.db')
     cursor = conn.cursor()
 
@@ -24,8 +38,16 @@ def init_database():
     conn.close()
 
 
-def get_ip():
+def get_ip() -> str:
     #IP Address
+    """
+    Retrieves the IP address of the user. If the app is behind a proxy,
+    it will check the 'X-Forwarded-For' header and return the first address
+    in the list. Otherwise, it will return the REMOTE_ADDR value.
+
+    Returns:
+        str: IP address of the user
+    """
     ip_address = request.remote_addr
 
     # If your app is behind a proxy, you might check 'X-Forwarded-For'
@@ -37,6 +59,14 @@ def get_ip():
 @app.route("/vote/<study>")
 def vote(study):
     #init database if not made
+    """
+    This function handles the voting process. It will check if the IP address
+    has already voted. If not, it will add the vote to the database, and set a
+    cookie to indicate that the user has already voted.
+
+    Parameters:
+    study (str): The study to vote for, in the format "category-study"
+    """
     if 'poll.db' not in os.listdir():
         init_database()
 
@@ -87,10 +117,23 @@ def vote(study):
 
     else:
         print('User has already voted')
-        return render_template(r'base/already_voted.html')
+        return render_template(r'base/error.html', message="You have already voted.<br>If you believe this is an error, please contact the FYPDP team.")
 
 @app.route("/livepoll")
 def live_poll():
+    """
+    Handles the live poll display by fetching and aggregating poll data
+    from the database, and rendering it on the live poll page.
+
+    The function connects to the 'poll.db' SQLite database, retrieves the
+    count of votes grouped by criteria and study, and organizes the data
+    into a DataFrame. The data is then aggregated by category, sorted by 
+    the number of votes, and passed to the 'livepoll.html' template for 
+    rendering.
+
+    Returns:
+        Rendered template for the live poll page with aggregated data.
+    """
     #Get the data from the database
     conn = sqlite3.connect('poll.db')
     cursor = conn.cursor()
@@ -109,10 +152,25 @@ def live_poll():
     print(aggregated)
     return render_template('base/livepoll.html', aggregated = aggregated)
 
-# @app.route("/admin")
-# def admin():
-#     # return render_template('base/admin.html')
-
-# @app.route("/admin", methods = ["POST"])
-# def admin_post():
+@app.route("/admin", methods=["GET","POST"])
+def admin_post():
+    """ Handle the admin reset database functionality.
+        
+        If the request is POST and contains the "reset_database" key, 
+        then check if the user has confirmed the reset. If so, remove the 
+        database file and reinitialise it, then return a success message.
+    """
     
+    if request.method == "POST":
+        print("Post Received")
+        print(request.form)
+        if request.form.get("confirm_reset") == "true":
+            print("Confirmed")
+            os.remove("poll.db")
+            logger.log("warning", "Database has been deleted.")
+            init_database()
+            logger.log("info", "Database has been reinitialised.")
+
+            return redirect(url_for("admin_post"))  
+
+    return render_template("base/admin.html", password = ADMIN_PASS)
