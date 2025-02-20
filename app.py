@@ -2,9 +2,27 @@ from flask import Flask, render_template, request, jsonify, make_response
 import sqlite3
 import datetime
 import pandas as pd
+import os
+from module.logger import Logger
 
 app = Flask(__name__)
 DEBUG = False
+
+def init_database():
+    conn = sqlite3.connect('poll.db')
+    cursor = conn.cursor()
+
+    #Create a table if exists
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS poll(
+                   id INTEGER PRIMARY KEY AUTOINCREMENT,
+                   criteria TEXT NOT NULL,
+                   study TEXT NOT NULL,
+                   ip_address TEXT NOT NULL)
+                   """)
+    conn.commit()
+    conn.close()
+
 
 def get_ip():
     #IP Address
@@ -18,6 +36,10 @@ def get_ip():
 
 @app.route("/vote/<study>")
 def vote(study):
+    #init database if not made
+    if 'poll.db' not in os.listdir():
+        init_database()
+
     #Check if ip_address is already inside the 
     ip_address = get_ip()
 
@@ -87,21 +109,10 @@ def live_poll():
     print(aggregated)
     return render_template('base/livepoll.html', aggregated = aggregated)
 
+# @app.route("/admin")
+# def admin():
+#     # return render_template('base/admin.html')
 
-
-if __name__=="__main__":
-
-    conn = sqlite3.connect('poll.db')
-    cursor = conn.cursor()
-
-    #Create a table if exists
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS poll(
-                   id INTEGER PRIMARY KEY AUTOINCREMENT,
-                   criteria TEXT NOT NULL,
-                   study TEXT NOT NULL,
-                   ip_address TEXT NOT NULL)
-                   """)
-    conn.commit()
-    conn.close()
-    app.run(debug=True, use_reloader=False)
+# @app.route("/admin", methods = ["POST"])
+# def admin_post():
+    
