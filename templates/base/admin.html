@@ -37,36 +37,30 @@
     <script>
         function confirmReset(event) {
             event.preventDefault();  // Stop the form from submitting immediately
-            
-            var form = document.getElementById("resetForm");
-            var confirmInput = document.getElementById("confirmResetInput");
-            console.log("{{password}}")
-            var correctPIN = "{{ password }}"; // Change this to your actual PIN
     
-            console.log("Confirm Reset Clicked");
-            console.log("Form Element:", form);
-    
-            if (!form) {
-                console.error("Error: Form not found! Check the ID in your HTML.");
-                return;
-            }
-    
-            // Ask for a PIN
             var userPIN = prompt("Enter the admin PIN to reset the database:");
     
             if (userPIN === null) {
                 console.log("Reset canceled by user.");
-                return; // User pressed Cancel
+                return;
             }
     
-            if (userPIN === correctPIN) {
-                confirmInput.value = "true"; 
-                console.log("Correct PIN entered. Resetting database...");
-                form.submit();  // Manually submit the form
-            } else {
-                alert("Incorrect PIN! Database reset denied.");
-                console.error("Incorrect PIN entered.");
-            }
+            // Send the PIN to the server for validation
+            fetch("/verify_pin", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pin: userPIN })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("confirmResetInput").value = "true";
+                    document.getElementById("resetForm").submit();
+                } else {
+                    alert("Incorrect PIN! Database reset denied.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
         }
     </script>
 </body>

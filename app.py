@@ -101,13 +101,13 @@ def vote(study):
     #Get the category and study from the study database
     conn = sqlite3.connect('study.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM studies WHERE ID = ?", (study,))
+    cursor.execute("SELECT * FROM study WHERE ID = ?", (study,))
     results = cursor.fetchall()
     conn.close()
 
     #This should only have one result
-    category = results[0][0]
-    study_title = results[0][1]
+    category = results[0][1]
+    study_title = results[0][2]
 
     #Add to the database if no cookie is present and ip not found in db
     if ((ip_is_voted == False) and (cookie_is_voted == False)) or DEBUG:
@@ -189,6 +189,17 @@ def admin_post():
             return redirect(url_for("admin_post"))  
 
     return render_template("base/admin.html", password = ADMIN_PASS)
+
+
+@app.route("/verify_pin", methods=["POST"])
+def verify_pin():
+    """Check if the entered PIN is correct."""
+    data = request.get_json()
+    if data and "pin" in data and data["pin"] == ADMIN_PASS:
+        return jsonify({"success": True})
+    return jsonify({"success": False})
+
+
 
 @app.errorhandler(404)
 def page_not_found(error):
