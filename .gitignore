@@ -3,3 +3,6 @@ poll.db
 *.pyc
 *.zip
 dev
+
+# Log File
+*.log
