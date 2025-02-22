@@ -2,3 +2,4 @@ env
 poll.db
 *.pyc
 *.zip
+dev

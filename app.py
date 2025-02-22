@@ -4,10 +4,11 @@ import datetime
 import pandas as pd
 import os
 from module.logger import Logger
+from urllib.parse import unquote
 
 app = Flask(__name__)
 logger = Logger(__name__)
-DEBUG = False
+DEBUG = True
 
 ADMIN_PASS = "FYPDP2025_admin135"
 
@@ -23,6 +24,7 @@ def init_database() -> None:
 
     Note that this function does not have any parameters or return values.
     """
+    logger.log("info", "Initialising database...")
     conn = sqlite3.connect('poll.db')
     cursor = conn.cursor()
 
@@ -36,6 +38,7 @@ def init_database() -> None:
                    """)
     conn.commit()
     conn.close()
+    logger.log("info", "Database has been initialised on {}.".format(datetime.datetime.now()))
 
 
 def get_ip() -> str:
@@ -58,7 +61,6 @@ def get_ip() -> str:
 
 @app.route("/vote/<study>")
 def vote(study):
-    #init database if not made
     """
     This function handles the voting process. It will check if the IP address
     has already voted. If not, it will add the vote to the database, and set a
@@ -67,6 +69,7 @@ def vote(study):
     Parameters:
     study (str): The study to vote for, in the format "category-study"
     """
+    #init database if not made
     if 'poll.db' not in os.listdir():
         init_database()
 
@@ -95,11 +98,16 @@ def vote(study):
         response.set_cookie('has_voted', 'true', max_age=60 * 60 * 24 * 7)  #Max Age is 1 week.
         cookie_is_voted = False
     
-    category, study_title = study.split('-')
+    #Get the category and study from the study database
+    conn = sqlite3.connect('study.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM studies WHERE ID = ?", (study,))
+    results = cursor.fetchall()
+    conn.close()
 
-    study_title = " ".join([i.title() for i in study_title.split('_')])
-    category = " ".join([i.title() for i in category.split('_')])
-
+    #This should only have one result
+    category = results[0][0]
+    study_title = results[0][1]
 
     #Add to the database if no cookie is present and ip not found in db
     if ((ip_is_voted == False) and (cookie_is_voted == False)) or DEBUG:
@@ -111,18 +119,20 @@ def vote(study):
             """, (category, study_title, ip_address))
         conn.commit()
         #Add the log
-        print('Inserted the values at {}\n{}\t{}\t{}'.format(datetime.datetime.now(),category, study_title, ip_address))
+        logger.log("info", "Inserted the values at {}\n{}\t{}\t{}".format(datetime.datetime.now(),category, study_title, ip_address))
+        
         conn.close()
         return render_template(r'base/voted.html',category = category, study_title = study_title, ip_address = ip_address)
 
     else:
         print('User has already voted')
-        return render_template(r'base/error.html', message="You have already voted.<br>If you believe this is an error, please contact the FYPDP team.")
+        return render_template(r'base/error.html', message="You have already voted. If you believe this is an error, please contact the FYPDP team.")
+
 
 @app.route("/livepoll")
 def live_poll():
     """
-    Handles the live poll display by fetching and aggregating poll data
+    Handles the live poll display by fetching and aggregating poll data 
     from the database, and rendering it on the live poll page.
 
     The function connects to the 'poll.db' SQLite database, retrieves the
@@ -134,6 +144,10 @@ def live_poll():
     Returns:
         Rendered template for the live poll page with aggregated data.
     """
+    #init database if not made
+    if 'poll.db' not in os.listdir():
+        return render_template(r'base/error.html', message="No votes found.If you believe this is an error, please contact the FYPDP team.")
+    
     #Get the data from the database
     conn = sqlite3.connect('poll.db')
     cursor = conn.cursor()
@@ -149,6 +163,7 @@ def live_poll():
 
     df = pd.DataFrame(results, columns=['Category', 'Study', 'Votes'])
     aggregated = [i.sort_values(by='Votes').values.tolist() for idx, i in df.groupby('Category')]
+    
     print(aggregated)
     return render_template('base/livepoll.html', aggregated = aggregated)
 
@@ -174,3 +189,7 @@ def admin_post():
             return redirect(url_for("admin_post"))  
 
     return render_template("base/admin.html", password = ADMIN_PASS)
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('base/error.html', message="Page not found. If you believe this is an error, please contact the FYPDP team. "), 404
