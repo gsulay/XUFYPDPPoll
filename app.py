@@ -8,7 +8,7 @@ from urllib.parse import unquote
 
 app = Flask(__name__)
 logger = Logger(__name__)
-DEBUG = True
+DEBUG = False
 
 ADMIN_PASS = "FYPDP2025_admin135"
 
