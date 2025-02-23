@@ -1,9 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Luxurious+Roman&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Luxurious+Roman&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 body {
     position: relative;
     margin: 0;
     padding: 0;
-    color:white;
+    color:rgb(255, 255, 255);
+    /* font-family:'Merriweather', serif; */
 }
 
 body::before {
@@ -23,16 +26,18 @@ body::before {
     font-size: 60px; /* Correct usage */
     font-weight: bold; /* Optional: makes the text bold */
     text-align: center; /* Optional: centers the text */
-    font-family: 'Luxorious Roman',serif;
+    font-family: 'PLayfair Display SC',serif;
+    color: rgb(255, 204, 38)
 }
 
 .header-container, .body-container{
     background-color: rgba(255,255,255,0.1);
-    padding: 10px;
+    padding: 15px;
     border-radius: 5px;
     margin-top:5%;
     margin-left: 15%;
     margin-right:15%;
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3); 
 }
 .header-container {
     margin-top: 1%;
