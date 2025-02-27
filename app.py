@@ -5,12 +5,22 @@ import pandas as pd
 import os
 from module.logger import Logger
 from urllib.parse import unquote
+import random
+import string
+
+
+
+
 
 app = Flask(__name__)
 logger = Logger(__name__)
 DEBUG = False
 
 ADMIN_PASS = "FYPDP2025_admin135"
+
+def get_random_string(length):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
 
 def init_database() -> None:
     """
@@ -39,6 +49,13 @@ def init_database() -> None:
     conn.commit()
     conn.close()
     logger.log("info", "Database has been initialised on {}.".format(datetime.datetime.now()))
+
+    #Set Current Deployment ID
+    key = get_random_string(16)
+    with open("key.txt", "w") as f:
+        f.write(key)
+
+    logger.log("info", "Deployment key has been set to {}.".format(key))
 
 
 def get_ip() -> str:
@@ -90,12 +107,15 @@ def vote(study):
     if request.headers.get('X-Forwarded-For'):
         ip_address = request.headers.get('X-Forwarded-For').split(',')[0].strip()
 
+    with open("key.txt", "r") as f:
+        key = f.read()
+    
 
-    if request.cookies.get('has_voted'):
+    if request.cookies.get(f'has_voted_{key}'):
         cookie_is_voted = True
     else:
         response = make_response(jsonify({"message": "Your vote has been recorded"}))
-        response.set_cookie('has_voted', 'true', max_age=60 * 60 * 24 * 7)  #Max Age is 1 week.
+        response.set_cookie(f'has_voted_{key}', 'true', max_age=60 * 60 * 24 * 7)  #Max Age is 1 week.
         cookie_is_voted = False
     
     #Get the category and study from the study database

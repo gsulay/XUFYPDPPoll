@@ -9,3 +9,7 @@ deply_env
 
 # Log File
 *.log
+
+
+#Session Key
+*.txt
