@@ -114,8 +114,6 @@ def vote(study):
     if request.cookies.get(f'has_voted_{key}'):
         cookie_is_voted = True
     else:
-        response = make_response(jsonify({"message": "Your vote has been recorded"}))
-        response.set_cookie(f'has_voted_{key}', 'true', max_age=60 * 60 * 24 * 7)  #Max Age is 1 week.
         cookie_is_voted = False
     
     #Get the category and study from the study database
@@ -142,7 +140,9 @@ def vote(study):
         logger.log("info", "Inserted the values at {}\n{}\t{}\t{}".format(datetime.datetime.now(),category, study_title, ip_address))
         
         conn.close()
-        return render_template(r'base/voted.html',category = category, study_title = study_title, ip_address = ip_address)
+        response = make_response(render_template(r'base/voted.html',category = category, study_title = study_title, ip_address = ip_address))
+        response.set_cookie(f'has_voted_{key}', 'true', max_age=60 * 60 * 24 * 7)  #Max Age is 1 week.
+        return response
 
     else:
         print('User has already voted')
