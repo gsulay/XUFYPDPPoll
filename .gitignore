@@ -7,7 +7,7 @@ poll.db
 dev
 deply_env
 
-# Log File
+# Log File a
 *.log
 
 
